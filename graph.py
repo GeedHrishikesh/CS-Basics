@@ -1,12 +1,18 @@
 from collections import defaultdict
+import heapq
+
 class Graph:
     # initializes the graph
     def __init__(self):
         self.graph = defaultdict(dict)
+        self.nodes = nodes
+        self.visted = [False]*nodes
+        self.degrees = [0]*self.nodes
     
     # add edge from node1, node2 with weight
     def addEdge(self, node1, node2, weight = 0):
         self.graph[node1][node2] = weight
+        self.degrees[node2] += 1
 
     # create Graph with different functions 
     def setUnDirectedGraph(self, edges):
@@ -26,6 +32,23 @@ class Graph:
     def setWeightedDirectedGraph(self, edges):
         for edge in edges:
             self.addEdge(edge[0], edge[1], edge[2])
+
+    def topologicalSort(self):
+        heap = []
+
+        for node in range(self.nodes):
+            heapq.heappush(heap,(self.degrees[node], node))
+        
+        while(heap):
+            degree, node = heapq.heappop(heap)
+            if not self.visited[node] and degree > 0 :
+                return False
+            if not self.visited[node]:
+                self.visited[node] = True
+                for child_node in self.graph[node]:
+                    self.degrees[child_node] -= 1 
+                    heapq.heappush(heap, (self.degrees[child_node], child_node))
+        return True
 
 class DFS():
     def __init__(self, graph, nodes):
